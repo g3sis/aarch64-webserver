@@ -16,6 +16,9 @@ http_fail:
 file_path:
 	.ascii "/home/pi/aarch64-webserver/index.html"
 
+image_path:
+	.ascii "home/pi/aarch64-webserver/images/img.jpg"
+
 .section .bss
 
 clientaddr:	

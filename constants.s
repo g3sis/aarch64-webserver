@@ -3,6 +3,7 @@
 .equ SYS_openat, 56
 .equ SYS_close, 57
 .equ SYS_read, 63
+.equ SYS_write, 64
 .equ SYS_fstat, 80
 .equ SYS_exit, 93
 .equ SYS_socket, 198
