@@ -71,7 +71,7 @@ load_html:
 	mov x2, #1
 	mov x3, #2
 	mov x4, x20
-	mov x5, #0
+	eor x5, x5, x5
 
 	mov x8, SYS_mmap
 	svc #0
