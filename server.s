@@ -27,6 +27,9 @@ clientaddr_len:
 statbuff:
 	.zero 144
 
+request_buff:
+	.zero 4096
+
 .section .text
 .global _start
 
@@ -37,6 +40,11 @@ _start:
 	bl create_server
 
 	ret
+
+print:
+	mov x0, #1
+	mov x8, SYS_write
+	svc #0
 
 load_html:
 
@@ -164,6 +172,24 @@ send:
 loop:
 
 	bl accept
+
+	mov x20, x0
+
+	mov x0, x20
+	ldr x1, =request_buff
+	mov x2, #4096
+	mov x8, SYS_read
+	svc #0
+	
+	mov x21, x0
+
+	mov x0, #1
+	ldr x1, =request_buff
+	mov x2, x21
+	mov x8, SYS_write
+	svc #0
+	
+	mov x0, x20
    	bl send
    	b loop
 
