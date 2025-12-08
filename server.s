@@ -117,11 +117,6 @@ load_html:
 
 load_img:
 
-	mov x0, #1
-	ldr x1, =img_path_buff
-	mov x2, #14
-	bl print
-
 	// open
 	mov  x0, AT_FDCWD
 	ldr x1, =img_path_buff
@@ -131,10 +126,10 @@ load_img:
 	mov x8, SYS_openat
 	svc #0
 
-	mov x20, x0
+	mov x25, x0
 	
 	// fstat
-	mov x0, x20
+	mov x0, x25
 	ldr x1, =statbuff
 
 	mov x8, SYS_fstat
@@ -152,7 +147,7 @@ load_img:
 	mov x1, x21
 	mov x2, #1
 	mov x3, #2
-	mov x4, x20
+	mov x4, x25
 	eor x5, x5, x5
 
 	mov x8, SYS_mmap
@@ -162,7 +157,7 @@ load_img:
 
 	//close
 
-	mov x0, x20
+	mov x0, x25
 
 	mov x8, SYS_close
 	svc #0
@@ -247,6 +242,7 @@ send_img:
 
 	mov x1, x22
 	mov x2, x21
+	mov x0, x20
 	
 	eor x3, x3, x3
 	eor x4, x4, x5
@@ -254,6 +250,9 @@ send_img:
 
 	mov x8, SYS_sendto
 	svc #0
+
+	b eol
+
 	ret
 
 close:
@@ -416,9 +415,9 @@ is_img:
         b.ne fail
 
         ldr x1, =request_buff
-	add x1, x1, #4         
+	add x1, x1, #5         
      	ldr x2, =img_path_buff 
-     	mov x3, #14            
+     	mov x3, #13            
 
 copy_path:
         ldrb w4, [x1], #1  
