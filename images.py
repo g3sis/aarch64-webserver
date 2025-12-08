@@ -29,19 +29,19 @@ def create_http_response_files():
 
              # Create HTTP response
              http_header = (
-                 f"HTTP/1.1 200 OK\r\n"
-                 f"Content-Type: {mime_type}\r\n"
-                 f"Content-Encoding: gzip\r\n"
-                 f"Content-Length: {len(compressed_data)}\r\n"
-                 f"Cache-Control: max-age=3600\r\n"
-                 f"\r\n"
+                 f"HTTP/1.1 200 OK\n"
+                 f"Content-Type: {mime_type}\n"
+                 f"Content-Encoding: gzip\n"
+                 f"Content-Length: {len(compressed_data)}\n"
+                 f"Cache-Control: max-age=3600\n"
+                 f"\n"
              ).encode('ascii')
 
              # Combine header + compressed data
              response_data = http_header + compressed_data
 
              # Write to output file
-             output_filename = f"{img_path.stem}.http"
+             output_filename = f"{img_path.stem}"
              output_path = output_dir / output_filename
 
              with open(output_path, 'wb') as f:

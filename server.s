@@ -35,6 +35,9 @@ statbuff:
 request_buff:
 	.zero 4096
 
+img_path_buff:
+	.zero 14
+
 temp_byte: 
 	.zero 1
 
@@ -112,6 +115,62 @@ load_html:
 
 	ret
 
+load_img:
+
+	mov x0, #1
+	ldr x1, =img_path_buff
+	mov x2, #14
+	bl print
+
+	// open
+	mov  x0, AT_FDCWD
+	ldr x1, =img_path_buff
+	eor x2, x2, x2
+	mov x3, #292
+
+	mov x8, SYS_openat
+	svc #0
+
+	mov x20, x0
+	
+	// fstat
+	mov x0, x20
+	ldr x1, =statbuff
+
+	mov x8, SYS_fstat
+	svc #0
+	
+	// get size
+	mov x9, #9
+	ldr x0, =statbuff
+	add x0, x0, ST_SIZE_OFFSET
+	ldr x21, [x0]
+
+	// mmap
+	
+	eor x0, x0, x0
+	mov x1, x21
+	mov x2, #1
+	mov x3, #2
+	mov x4, x20
+	eor x5, x5, x5
+
+	mov x8, SYS_mmap
+	svc #0
+
+	mov x22, x0
+
+	//close
+
+	mov x0, x20
+
+	mov x8, SYS_close
+	svc #0
+
+	mov x0, x22
+	mov x1, x21
+
+	ret
 
 create_server:
 	
@@ -180,6 +239,21 @@ send:
 	mov x8, SYS_sendto
 	svc #0
 
+	b eol
+
+send_img:
+
+	bl load_img
+
+	mov x1, x22
+	mov x2, x21
+	
+	eor x3, x3, x3
+	eor x4, x4, x5
+	eor x5, x5, x5
+
+	mov x8, SYS_sendto
+	svc #0
 	ret
 
 close:
@@ -213,6 +287,150 @@ fail:
         mov x17, #0
         ret
 
+is_slash:
+	eor x2, x2, x2
+	ldr x1, =request_buff
+	add x1, x1, #4
+        ldrb w2, [x1]
+        cmp w2, #0x2F
+        b.ne fail
+
+        ldrb w2, [x1, #1]
+        cmp w2, #0x20
+        b.ne fail
+
+	mov x17, #1
+
+	ret
+
+is_index:
+	eor x2, x2, x2
+	ldr x1, =request_buff
+	add x1, x1, #4
+        ldrb w2, [x1]
+        cmp w2, #0x2F
+        b.ne fail
+
+        ldrb w2, [x1, #1]
+        cmp w2, #0x69
+        b.ne fail
+
+        ldrb w2, [x1, #2]
+        cmp w2, #0x6E
+        b.ne fail
+
+        ldrb w2, [x1, #3]
+        cmp w2, #0x64
+        b.ne fail
+
+        ldrb w2, [x1, #4]
+        cmp w2, #0x65
+        b.ne fail
+
+        ldrb w2, [x1, #5]
+        cmp w2, #0x78
+        b.ne fail
+
+        ldrb w2, [x1, #6]
+        cmp w2, #0x2E
+        b.ne fail
+
+        ldrb w2, [x1, #7]
+        cmp w2, #0x68
+        b.ne fail
+
+        ldrb w2, [x1, #8]
+        cmp w2, #0x74
+        b.ne fail
+
+        ldrb w2, [x1, #9]
+        cmp w2, #0x6D
+        b.ne fail
+
+        ldrb w2, [x1, #10]
+        cmp w2, #0x6c
+        b.ne fail
+
+        ldrb w2, [x1, #11]
+        cmp w2, #0x20
+        b.ne fail
+
+	mov x17, #1
+
+	ret
+
+is_img:
+	eor x2, x2, x2
+	ldr x1, =request_buff
+	add x1, x1, #4
+        ldrb w2, [x1]
+        cmp w2, #0x2F
+        b.ne fail
+
+        ldrb w2, [x1, #1]
+        cmp w2, #0x69
+        b.ne fail
+
+        ldrb w2, [x1, #2]
+        cmp w2, #0x6d
+        b.ne fail
+
+        ldrb w2, [x1, #3]
+        cmp w2, #0x61
+        b.ne fail
+
+        ldrb w2, [x1, #4]
+        cmp w2, #0x67
+        b.ne fail
+
+        ldrb w2, [x1, #5]
+        cmp w2, #0x65
+        b.ne fail
+
+        ldrb w2, [x1, #6]
+        cmp w2, #0x73
+        b.ne fail
+
+        ldrb w2, [x1, #7]
+        cmp w2, #0x2F
+        b.ne fail
+
+        ldrb w2, [x1, #8]
+        cmp w2, #0x69
+        b.ne fail
+
+        ldrb w2, [x1, #9]
+        cmp w2, #0x6d
+        b.ne fail
+
+        ldrb w2, [x1, #10]
+        cmp w2, #0x67
+        b.ne fail
+
+        ldrb w2, [x1, #14]
+        cmp w2, #0x2E
+        b.ne fail
+
+        ldrb w2, [x1, #18]
+        cmp w2, #0x20
+        b.ne fail
+
+        ldr x1, =request_buff
+	add x1, x1, #4         
+     	ldr x2, =img_path_buff 
+     	mov x3, #14            
+
+copy_path:
+        ldrb w4, [x1], #1  
+        strb w4, [x2], #1  
+        subs x3, x3, #1    
+        b.ne copy_path
+
+	mov x17, #1
+        
+	ret
+
+
 loop:
 
 	bl accept
@@ -230,14 +448,30 @@ loop:
 	ldr x1, =request_buff
 	mov x2, x21
 	bl print
-	
+
 	bl is_get
 	cmp x17, #1
 	b.ne send_400
 
+	bl is_slash
+	cmp x17, #1
 	mov x0, x20
-   	bl send
+	b.eq send
 
+	bl is_index
+	cmp x17, #1
+	b.eq send
+	
+	bl is_img
+	
+	cmp x17, #1
+	b.eq send_img
+
+	mov x0, x20
+   	bl send_400
+
+
+eol:
 	mov x0, x20
 	bl close
 
