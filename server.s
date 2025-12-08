@@ -11,10 +11,12 @@ sockaddr:
 sockaddr_len = . - sockaddr 
 
 http_fail:
-	.ascii "HTTP/1.1 400 Bad Request\r\n"
+         .ascii "HTTP/1.1 400 Bad Request\r\nContent-Type: text/plain\r\nContent-Length: 11\r\n\r\nBad Request"
+
+fail_len = . - http_fail
 
 file_path:
-	.ascii "/home/pi/aarch64-webserver/index.html"
+	.ascii "./index.html"
 
 .section .bss
 
@@ -30,6 +32,9 @@ statbuff:
 request_buff:
 	.zero 4096
 
+temp_byte: 
+	.zero 1
+
 .section .text
 .global _start
 
@@ -37,14 +42,20 @@ _start:
 	bl load_html
 	mov x16, x22
 	mov x15, x21
+
+	//mov x0, #1
+	//mov x1, x16
+	//mov x2, x15
+	//bl print
+
 	bl create_server
 
 	ret
 
 print:
-	mov x0, #1
 	mov x8, SYS_write
 	svc #0
+	ret
 
 load_html:
 
@@ -168,6 +179,35 @@ send:
 
 	ret
 
+close:
+	mov x8, SYS_close
+	svc #0
+
+is_get:
+	eor x2, x2, x2
+	ldr x1, =request_buff
+        ldrb w2, [x1]
+        cmp w2, #0x47
+        b.ne fail
+
+        ldrb w2, [x1, #1]
+        cmp w2, #0x45
+        b.ne fail
+
+        ldrb w2, [x1, #2]
+        cmp w2, #0x54
+        b.ne fail
+
+        ldrb w2, [x1, #3]
+        cmp w2, #0x20
+        b.ne fail
+
+        mov x17, #1
+        ret
+
+fail:
+        mov x17, #0
+        ret
 
 loop:
 
@@ -181,27 +221,34 @@ loop:
 	mov x8, SYS_read
 	svc #0
 	
+	// request buffer len
 	mov x21, x0
 
 	mov x0, #1
 	ldr x1, =request_buff
 	mov x2, x21
-	mov x8, SYS_write
-	svc #0
 	
 	mov x0, x20
    	bl send
+
+	mov x0, x20
+	bl close
+
    	b loop
 
+send_400:
+        mov x0,x20
 
+        ldr x1, =http_fail
+        mov x2, fail_len
 
+        eor x3, x3, x3
+        eor x4, x4, x4
+        eor x5, x5, x5
 
+        mov x8, SYS_sendto
+        svc #0
 
-
-
-
-
-
-
-
-
+	mov x0, x20
+	bl close
+	ret
