@@ -11,7 +11,10 @@ sockaddr:
 sockaddr_len = . - sockaddr 
 
 http_fail:
-         .ascii "HTTP/1.1 400 Bad Request\r\nContent-Type: text/plain\r\nContent-Length: 11\r\n\r\nBad Request"
+         .ascii "HTTP/1.1 400 Bad Request\r\n"
+	 .ascii "Content-Type: text/plain\r\n"
+	 .ascii "Content-Length: 11\r\n\r\n"
+	 .ascii "Bad Request"
 
 fail_len = . - http_fail
 
@@ -182,6 +185,7 @@ send:
 close:
 	mov x8, SYS_close
 	svc #0
+	ret
 
 is_get:
 	eor x2, x2, x2
@@ -220,14 +224,17 @@ loop:
 	mov x2, #4096
 	mov x8, SYS_read
 	svc #0
-	
-	// request buffer len
 	mov x21, x0
 
 	mov x0, #1
 	ldr x1, =request_buff
 	mov x2, x21
+	bl print
 	
+	bl is_get
+	cmp x17, #1
+	b.ne send_400
+
 	mov x0, x20
    	bl send
 
@@ -251,4 +258,4 @@ send_400:
 
 	mov x0, x20
 	bl close
-	ret
+	b loop
