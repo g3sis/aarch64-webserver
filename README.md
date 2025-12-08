@@ -7,14 +7,13 @@ Built using man pages, syscall tables and a few hours of my time. Not optimized 
 
 ## Usage:
 ```
+python images.py
 make
-sudo server.s
+sudo ./server.s
 ```
 
 ---
 
 ## Yet to come:
 
-- images
-- actual request handling
 - enjoying life again
