@@ -83,5 +83,26 @@ def create_http_response_files():
              f.write(header + body_bytes)
          print(f"Created images.html ({len(header + body_bytes)} bytes)")
 
+         # Update index.html header
+         index_path = Path("index.html")
+         if index_path.exists():
+             print("Updating index.html header...")
+             with open(index_path, 'rb') as f:
+                 content = f.read()
+
+             if b'\n\n' in content:
+                 _, body = content.split(b'\n\n', 1)
+
+                 new_header = (
+                     f"HTTP/1.1 200 OK\n"
+                     f"Content-Length: {len(body)}\n"
+                     f"Content-Type: text/html\n"
+                     f"\n"
+                 ).encode('ascii')
+
+                 with open(index_path, 'wb') as f:
+                     f.write(new_header + body)
+                 print(f"Updated index.html (Content-Length: {len(body)})")
+
 if __name__ == "__main__":
          create_http_response_files()
