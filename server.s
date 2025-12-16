@@ -48,15 +48,6 @@ temp_byte:
 .global _start
 
 _start: 
-	bl load_index
-	mov x16, x22
-	mov x15, x21
-
-	//mov x0, #1
-	//mov x1, x16
-	//mov x2, x15
-	//bl print
-
 	bl create_server
 
 	ret
@@ -66,63 +57,11 @@ print:
 	svc #0
 	ret
 
-load_index:
-
-	// open
-	mov x0, AT_FDCWD
-	ldr x1, =file_path
-	eor x2, x2, x2
-	mov x3, #292
-
-	mov x8, SYS_openat
-	svc #0
-
-	mov x20, x0
-	
-	// fstat
-	mov x0, x20
-	ldr x1, =statbuff
-
-	mov x8, SYS_fstat
-	svc #0
-	
-	// get size
-	mov x9, #9
-	ldr x0, =statbuff
-	add x0, x0, ST_SIZE_OFFSET
-	ldr x21, [x0]
-
-	// mmap
-	
-	eor x0, x0, x0
-	mov x1, x21
-	mov x2, #1
-	mov x3, #2
-	mov x4, x20
-	eor x5, x5, x5
-
-	mov x8, SYS_mmap
-	svc #0
-
-	mov x22, x0
-
-	//close
-
-	mov x0, x20
-
-	mov x8, SYS_close
-	svc #0
-
-	mov x0, x22
-	mov x1, x21
-
-	ret
 
 load_html:
 
 	// open
 	mov x0, AT_FDCWD
-	ldr x1, =overview_path
 	eor x2, x2, x2
 	mov x3, #292
 
@@ -276,20 +215,6 @@ accept:
 	svc #0
 	
 	ret
-
-send:
-	
-	mov x1, x16
-	mov x2, x15
-
-	eor x3, x3, x3
-	eor x4, x4, x5
-	eor x5, x5, x5
-
-	mov x8, SYS_sendto
-	svc #0
-
-	b eol
 
 send_subpage:
 	
@@ -485,9 +410,6 @@ is_overview:
         b.ne fail
 
 	mov x17, #1
-
-	ldr x1, =overview_path
-	bl load_html
 	ret
 
 is_img:
@@ -561,6 +483,17 @@ copy_path:
         
 	ret
 
+overview:
+	ldr x1, =overview_path
+	bl load_html
+	mov x0, x20
+	b send_subpage
+
+index:
+	ldr x1, =file_path
+	bl load_html
+	mov x0, x20
+	b send_subpage
 
 loop: 
 
@@ -587,16 +520,15 @@ loop:
 	bl is_slash
 	cmp x17, #1
 	mov x0, x20
-	b.eq send
+	b.eq index
 
 	bl is_index
 	cmp x17, #1
-	b.eq send
+	b.eq index
 
 	bl is_overview
 	cmp x17, #1
-	mov x0, x20
-	b.eq send_subpage
+	b.eq overview 
 	
 	bl is_img	
 	cmp x17, #1
