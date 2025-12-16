@@ -18,6 +18,10 @@ http_fail:
 
 fail_len = . - http_fail
 
+overview_path:
+	.ascii "./images.html"
+
+
 file_path:
 	.ascii "./index.html"
 
@@ -45,7 +49,7 @@ temp_byte:
 .global _start
 
 _start:
-	bl load_html
+	bl load_index
 	mov x16, x22
 	mov x15, x21
 
@@ -63,7 +67,7 @@ print:
 	svc #0
 	ret
 
-load_html:
+load_index:
 
 	// open
 	mov  x0, AT_FDCWD
@@ -112,6 +116,57 @@ load_html:
 
 	mov x0, x22
 	mov x1, x21
+
+	ret
+
+load_html:
+
+	// open
+	mov  x0, AT_FDCWD
+	eor x2, x2, x2
+	mov x3, #292
+
+	mov x8, SYS_openat
+	svc #0
+
+	mov x30, x0
+	
+	// fstat
+	mov x0, x30
+	ldr x1, =statbuff
+
+	mov x8, SYS_fstat
+	svc #0
+	
+	// get size
+	mov x9, #9
+	ldr x0, =statbuff
+	add x0, x0, ST_SIZE_OFFSET
+	ldr x28, [x0]
+
+	// mmap
+	
+	eor x0, x0, x0
+	mov x1, x28
+	mov x2, #1
+	mov x3, #2
+	mov x4, x30
+	eor x5, x5, x5
+
+	mov x8, SYS_mmap
+	svc #0
+
+	mov x29, x0
+
+	//close
+
+	mov x0, x30
+
+	mov x8, SYS_close
+	svc #0
+
+	mov x0, x29
+	mov x1, x28
 
 	ret
 
@@ -226,6 +281,23 @@ send:
 	
 	mov x1, x16
 	mov x2, x15
+
+	eor x3, x3, x3
+	eor x4, x4, x5
+	eor x5, x5, x5
+
+	mov x8, SYS_sendto
+	svc #0
+
+	b eol
+
+send_subpage:
+	
+	bl load_html
+
+	mov x1, x29
+	mov x2, x28
+	mov x0, x30
 
 	eor x3, x3, x3
 	eor x4, x4, x5
@@ -358,6 +430,68 @@ is_index:
 
 	ret
 
+is_overview:
+	eor x2, x2, x2
+	ldr x1, =request_buff
+	add x1, x1, #4
+        ldrb w2, [x1]
+        cmp w2, #0x2F
+        b.ne fail
+
+        ldrb w2, [x1, #1]
+        cmp w2, #0x69
+        b.ne fail
+
+        ldrb w2, [x1, #2]
+        cmp w2, #0x6d
+        b.ne fail
+
+        ldrb w2, [x1, #3]
+        cmp w2, #0x61
+        b.ne fail
+
+        ldrb w2, [x1, #4]
+        cmp w2, #0x67
+        b.ne fail
+
+        ldrb w2, [x1, #5]
+        cmp w2, #0x65
+        b.ne fail
+
+        ldrb w2, [x1, #6]
+        cmp w2, #0x73
+        b.ne fail
+
+        ldrb w2, [x1, #7]
+        cmp w2, #0x2E
+        b.ne fail
+
+        ldrb w2, [x1, #8]
+        cmp w2, #0x68
+        b.ne fail
+
+        ldrb w2, [x1, #9]
+        cmp w2, #0x74
+        b.ne fail
+
+        ldrb w2, [x1, #10]
+        cmp w2, #0x6d
+        b.ne fail
+
+        ldrb w2, [x1, #11]
+        cmp w2, #0x6c
+        b.ne fail
+
+        ldrb w2, [x1, #12]
+        cmp w2, #0x20
+        b.ne fail
+
+	bl load_index
+
+	mov x17, #1
+	ret
+
+
 is_img:
 	eor x2, x2, x2
 	ldr x1, =request_buff
@@ -460,9 +594,12 @@ loop:
 	bl is_index
 	cmp x17, #1
 	b.eq send
+
+	bl is_overview
+	cmp x17, #1
+	b.eq send
 	
-	bl is_img
-	
+	bl is_img	
 	cmp x17, #1
 	b.eq send_img
 
