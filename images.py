@@ -49,5 +49,39 @@ def create_http_response_files():
 
              print(f"Created {output_path} ({len(response_data)} bytes)")
 
+         # Generate images.html
+         print("Generating images.html...")
+         img_tags = []
+         for img_path in sorted(image_files):
+             img_tags.append(f'<img src="images/{img_path.name}">')
+
+         html_content = (
+             "<!DOCTYPE html>\n"
+             "<html>\n"
+             "<head>\n"
+             "    <style>\n"
+             "        body { display: flex; flex-wrap: wrap; margin: 0; padding: 0; }\n"
+             "        img { width: 10%; height: auto; display: block; }\n"
+             "    </style>\n"
+             "</head>\n"
+             "<body>\n"
+             f"    {''.join(img_tags)}\n"
+             "</body>\n"
+             "</html>"
+         )
+
+         body_bytes = html_content.encode('utf-8')
+
+         header = (
+             f"HTTP/1.1 200 OK\n"
+             f"Content-Type: text/html\n"
+             f"Content-Length: {len(body_bytes)}\n"
+             f"\n"
+         ).encode('ascii')
+
+         with open("images.html", "wb") as f:
+             f.write(header + body_bytes)
+         print(f"Created images.html ({len(header + body_bytes)} bytes)")
+
 if __name__ == "__main__":
          create_http_response_files()
