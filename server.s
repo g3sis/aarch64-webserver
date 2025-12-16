@@ -1,6 +1,6 @@
 .include "constants.s"
 
-.section .data
+.section .rodata
 
 sockaddr:
 	.hword AF_INET
@@ -19,18 +19,17 @@ http_fail:
 fail_len = . - http_fail
 
 overview_path:
-	.ascii "./images.html"
-
+	.asciz "./images.html"
 
 file_path:
-	.ascii "./index.html"
+	.asciz "./index.html"
 
 .section .bss
 
 clientaddr:	
 	.zero 16
 
-clientaddr_len:
+clientaddr_len: 
 	.zero 8
 
 statbuff:
@@ -48,7 +47,7 @@ temp_byte:
 .section .text
 .global _start
 
-_start:
+_start: 
 	bl load_index
 	mov x16, x22
 	mov x15, x21
@@ -70,7 +69,7 @@ print:
 load_index:
 
 	// open
-	mov  x0, AT_FDCWD
+	mov x0, AT_FDCWD
 	ldr x1, =file_path
 	eor x2, x2, x2
 	mov x3, #292
@@ -122,17 +121,18 @@ load_index:
 load_html:
 
 	// open
-	mov  x0, AT_FDCWD
+	mov x0, AT_FDCWD
+	ldr x1, =overview_path
 	eor x2, x2, x2
 	mov x3, #292
 
 	mov x8, SYS_openat
 	svc #0
 
-	mov x30, x0
+	mov x23, x0
 	
 	// fstat
-	mov x0, x30
+	mov x0, x23
 	ldr x1, =statbuff
 
 	mov x8, SYS_fstat
@@ -142,31 +142,31 @@ load_html:
 	mov x9, #9
 	ldr x0, =statbuff
 	add x0, x0, ST_SIZE_OFFSET
-	ldr x28, [x0]
+	ldr x24, [x0]
 
 	// mmap
 	
 	eor x0, x0, x0
-	mov x1, x28
+	mov x1, x24
 	mov x2, #1
 	mov x3, #2
-	mov x4, x30
+	mov x4, x23
 	eor x5, x5, x5
 
 	mov x8, SYS_mmap
 	svc #0
 
-	mov x29, x0
+	mov x26, x0
 
 	//close
 
-	mov x0, x30
+	mov x0, x23
 
 	mov x8, SYS_close
 	svc #0
 
-	mov x0, x29
-	mov x1, x28
+	mov x0, x26
+	mov x1, x24
 
 	ret
 
@@ -222,7 +222,7 @@ load_img:
 
 	ret
 
-create_server:
+create_server: 
 	
 	bl create_socket
 
@@ -293,11 +293,9 @@ send:
 
 send_subpage:
 	
-	bl load_html
-
-	mov x1, x29
-	mov x2, x28
-	mov x0, x30
+	mov x1, x26
+	mov x2, x24
+	mov x0, x20
 
 	eor x3, x3, x3
 	eor x4, x4, x5
@@ -308,7 +306,7 @@ send_subpage:
 
 	b eol
 
-send_img:
+send_img: 
 
 	bl load_img
 
@@ -374,7 +372,7 @@ is_slash:
 
 	ret
 
-is_index:
+is_index: 
 	eor x2, x2, x2
 	ldr x1, =request_buff
 	add x1, x1, #4
@@ -486,11 +484,11 @@ is_overview:
         cmp w2, #0x20
         b.ne fail
 
-	bl load_index
-
 	mov x17, #1
-	ret
 
+	ldr x1, =overview_path
+	bl load_html
+	ret
 
 is_img:
 	eor x2, x2, x2
@@ -564,7 +562,7 @@ copy_path:
 	ret
 
 
-loop:
+loop: 
 
 	bl accept
 
@@ -597,7 +595,8 @@ loop:
 
 	bl is_overview
 	cmp x17, #1
-	b.eq send
+	mov x0, x20
+	b.eq send_subpage
 	
 	bl is_img	
 	cmp x17, #1
