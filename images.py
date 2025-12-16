@@ -104,5 +104,26 @@ def create_http_response_files():
                      f.write(new_header + body)
                  print(f"Updated index.html (Content-Length: {len(body)})")
 
+         # Update wizard.html header
+         wizard_path = Path("wizard.html")
+         if wizard_path.exists():
+             print("Updating wizard.html header...")
+             with open(wizard_path, 'rb') as f:
+                 content = f.read()
+
+             if b'\n\n' in content:
+                 _, body = content.split(b'\n\n', 1)
+
+                 new_header = (
+                     f"HTTP/1.1 200 OK\n"
+                     f"Content-Length: {len(body)}\n"
+                     f"Content-Type: text/html\n"
+                     f"\n"
+                 ).encode('ascii')
+
+                 with open(wizard_path, 'wb') as f:
+                     f.write(new_header + body)
+                 print(f"Updated wizard.html (Content-Length: {len(body)})")
+
 if __name__ == "__main__":
          create_http_response_files()

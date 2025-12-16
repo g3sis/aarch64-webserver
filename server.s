@@ -24,6 +24,9 @@ overview_path:
 file_path:
 	.asciz "./index.html"
 
+wizard_path:
+	.asciz "./wizard.html"
+
 .section .bss
 
 clientaddr:	
@@ -353,6 +356,65 @@ is_index:
 
 	ret
 
+is_wizard:
+	eor x2, x2, x2
+	ldr x1, =request_buff
+	add x1, x1, #4
+        ldrb w2, [x1]
+        cmp w2, #0x2F
+        b.ne fail
+
+        ldrb w2, [x1, #1]
+        cmp w2, #0x77
+        b.ne fail
+
+        ldrb w2, [x1, #2]
+        cmp w2, #0x69
+        b.ne fail
+
+        ldrb w2, [x1, #3]
+        cmp w2, #0x7a
+        b.ne fail
+
+        ldrb w2, [x1, #4]
+        cmp w2, #0x61
+        b.ne fail
+
+        ldrb w2, [x1, #5]
+        cmp w2, #0x72
+        b.ne fail
+
+        ldrb w2, [x1, #6]
+        cmp w2, #0x64
+        b.ne fail
+
+        ldrb w2, [x1, #7]
+        cmp w2, #0x2E
+        b.ne fail
+
+        ldrb w2, [x1, #8]
+        cmp w2, #0x68
+        b.ne fail
+
+        ldrb w2, [x1, #9]
+        cmp w2, #0x74
+        b.ne fail
+
+        ldrb w2, [x1, #10]
+        cmp w2, #0x6d
+        b.ne fail
+
+        ldrb w2, [x1, #11]
+        cmp w2, #0x6c
+        b.ne fail
+
+        ldrb w2, [x1, #12]
+        cmp w2, #0x20
+        b.ne fail
+
+	mov x17, #1
+	ret
+
 is_overview:
 	eor x2, x2, x2
 	ldr x1, =request_buff
@@ -495,6 +557,12 @@ index:
 	mov x0, x20
 	b send_subpage
 
+wizard: 
+	ldr x1, =wizard_path
+	bl load_html
+	mov x0, x20
+	b send_subpage
+
 loop: 
 
 	bl accept
@@ -529,6 +597,10 @@ loop:
 	bl is_overview
 	cmp x17, #1
 	b.eq overview 
+
+	bl is_wizard
+	cmp x17, #1
+	b.eq wizard
 	
 	bl is_img	
 	cmp x17, #1
