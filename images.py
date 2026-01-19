@@ -55,19 +55,49 @@ def create_http_response_files():
          for img_path in sorted(image_files):
              img_tags.append(f'<img src="images/{img_path.name}">')
 
+         # ASCII art for the h1 (preserve backslashes using a raw string)
+         ascii_art = r"""    _             _     _           
+   / \   _ __ ___| |__ (_)_   _____ 
+  / _ \ | '__/ __| '_ \| \ \ / / _ \
+ / ___ \| | | (__| | | | |\ V /  __/
+/_/   \_\_|  \___|_| |_|_| \_/ \___|"""
+
+         # Build HTML content: include the requested h1 styling and ASCII art as the h1 content
          html_content = (
-             "<!DOCTYPE html>\n"
-             "<html>\n"
-             "<head>\n"
-             "    <style>\n"
-             "        body { display: flex; flex-wrap: wrap; margin: 0; padding: 0; }\n"
-             "        img { width: 10%; height: auto; display: block; }\n"
-             "    </style>\n"
-             "</head>\n"
-             "<body>\n"
-             f"    {''.join(img_tags)}\n"
-             "</body>\n"
-             "</html>"
+         "<!DOCTYPE html>\n"
+         "<html>\n"
+         "<head>\n"
+         "    <meta charset=\"utf-8\">\n"
+         "    <style>\n"
+         "        /* layout: stack header and gallery vertically */\n"
+         "        body { display: flex; flex-direction: column; align-items: center; margin: 0; padding: 0; }\n"
+         "        /* h1: preserve spaces, monospace font for alignment, centered */\n"
+         "        h1 {\n"
+         "            font-family: \"Courier New\", Courier, monospace; /* Essential for alignment */\n"
+         "            white-space: pre; /* Essential to preserve spaces */\n"
+         "            font-size: 14px;  /* Adjusted size for shorter art */\n"
+         "            line-height: 1.2;\n"
+         "            text-align: center;\n"
+         "            margin: 8px 0; /* small vertical spacing */\n"
+         "            width: 100%;\n"
+         "        }\n"
+         "        /* gallery holds the images, centered and wrapped */\n"
+         "        .gallery { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; width: 100%; box-sizing: border-box; padding: 8px 0; }\n"
+         "        .gallery img { width: 10%; height: auto; display: block; }\n"
+         "        @media (max-width: 600px) {\n"
+         "            .gallery img { width: 30%; }\n"
+         "        }\n"
+         "    </style>\n"
+         "</head>\n"
+         "<body>\n"
+         "    <h1>\n"
+         f"{ascii_art}\n"
+         "    </h1>\n"
+         "    <div class=\"gallery\">\n"
+         "    " + ("\n    ".join(img_tags)) + "\n"
+         "    </div>\n"
+         "</body>\n"
+         "</html>"
          )
 
          body_bytes = html_content.encode('utf-8')
