@@ -56,7 +56,7 @@ def create_http_response_files():
              img_tags.append(f'<img src="images/{img_path.name}">')
 
          # ASCII art for the h1 (preserve backslashes using a raw string)
-         ascii_art = r"""    _             _     _           
+         ascii_art = r"""    _             <a href="/" style="color:pink;text-decoration:none;">_<a>     _           
    / \   _ __ ___| |__ (_)_   _____ 
   / _ \ | '__/ __| '_ \| \ \ / / _ \
  / ___ \| | | (__| | | | |\ V /  __/

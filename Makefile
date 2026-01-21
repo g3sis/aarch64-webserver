@@ -16,7 +16,7 @@ $(TARGET): $(OBJ)
 
 # Rule to assemble the source file into an object file
 $(OBJ): $(SRC)
-	$(AS) -o $(OBJ) $(SRC)
+	$(AS) -g -o $(OBJ) $(SRC)
 
 # Rule to clean up build artifacts
 clean:
