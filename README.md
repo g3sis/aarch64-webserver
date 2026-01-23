@@ -1,6 +1,6 @@
 # A tiny aarch64 "webserver"
 
-Pretty basic implementation of opening and binding a socket, then accepting a connection and sending index.html.
+Pretty basic implementation of opening and binding a socket, then accepting a connection and sending selected files.
 Built using man pages, syscall tables and a few hours of my time. Not optimized at all.
 
 ---
@@ -9,11 +9,10 @@ Built using man pages, syscall tables and a few hours of my time. Not optimized 
 ```
 python images.py
 make
-sudo ./server.s
+sudo ./server
 ```
 
 ---
 
 ## Yet to come:
-
-- enjoying life again
+- local https in some way
