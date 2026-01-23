@@ -82,7 +82,7 @@ def create_http_response_files():
          "            width: 100%;\n"
          "        }\n"
          "        /* gallery holds the images, centered and wrapped */\n"
-         "        .gallery { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; width: 100%; box-sizing: border-box; padding: 8px 0; }\n"
+         "        .gallery { display: flex; flex-wrap: wrap; justify-content: center; gap: 0px; width: 100%; box-sizing: border-box; padding: 8px 0; }\n"
          "        .gallery img { width: 10%; height: auto; display: block; }\n"
          "        @media (max-width: 600px) {\n"
          "            .gallery img { width: 30%; }\n"

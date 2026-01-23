@@ -15,17 +15,23 @@ http_fail:
 	 .ascii "Content-Type: text/plain\r\n"
 	 .ascii "Content-Length: 11\r\n\r\n"
 	 .ascii "Bad Request"
-
 fail_len = . - http_fail
 
 overview_path:
 	.asciz "./images.html"
+overview_len = . - overview_path
 
 file_path:
 	.asciz "./index.html"
+file_len = . - file_path
 
 wizard_path:
 	.asciz "./wizard.html"
+wizard_len = . - wizard_path
+
+slash:
+	.asciz "/"
+slash_len = . - slash
 
 .section .bss
 
@@ -280,198 +286,77 @@ is_get:
         mov x17, #1
         ret
 
+strcmp:
+	// preset x1 to string and x2 to strlen1
+	// preset x3 to comparing string
+	
+	eor x4, x4, x4
+	eor x5, x5, x5
+	eor x6, x6, x6
+	sub x2, x2, #1
+
+cmp_loop:
+	ldrb w4, [x1]
+	ldrb w5, [x3]
+	cmp w4, w5
+	b.ne fail
+	add x1, x1, #1
+	add x3, x3, #1
+	add x6, x6, #1
+
+	cmp x2, x6
+	b.ne cmp_loop
+
+	ldrb w4, [x3]
+	cmp w4, #32
+	b.ne fail
+
+	mov x17, #1
+	ret
 fail:
         mov x17, #0
         ret
 
 is_slash:
-	eor x2, x2, x2
-	ldr x1, =request_buff
-	add x1, x1, #4
-        ldrb w2, [x1]
-        cmp w2, #0x2F
-        b.ne fail
-
-        ldrb w2, [x1, #1]
-        cmp w2, #0x20
-        b.ne fail
-
-	mov x17, #1
+	ldr x1, =slash
+	mov x2, slash_len
+	ldr x3, =request_buff
+	add x3, x3, #4
+	b strcmp
 
 	ret
 
 is_index: 
-	eor x2, x2, x2
-	ldr x1, =request_buff
-	add x1, x1, #4
-        ldrb w2, [x1]
-        cmp w2, #0x2F
-        b.ne fail
-
-        ldrb w2, [x1, #1]
-        cmp w2, #0x69
-        b.ne fail
-
-        ldrb w2, [x1, #2]
-        cmp w2, #0x6E
-        b.ne fail
-
-        ldrb w2, [x1, #3]
-        cmp w2, #0x64
-        b.ne fail
-
-        ldrb w2, [x1, #4]
-        cmp w2, #0x65
-        b.ne fail
-
-        ldrb w2, [x1, #5]
-        cmp w2, #0x78
-        b.ne fail
-
-        ldrb w2, [x1, #6]
-        cmp w2, #0x2E
-        b.ne fail
-
-        ldrb w2, [x1, #7]
-        cmp w2, #0x68
-        b.ne fail
-
-        ldrb w2, [x1, #8]
-        cmp w2, #0x74
-        b.ne fail
-
-        ldrb w2, [x1, #9]
-        cmp w2, #0x6D
-        b.ne fail
-
-        ldrb w2, [x1, #10]
-        cmp w2, #0x6c
-        b.ne fail
-
-        ldrb w2, [x1, #11]
-        cmp w2, #0x20
-        b.ne fail
-
-	mov x17, #1
+	ldr x1, =file_path
+	mov x2, file_len
+	ldr x3, =request_buff
+	add x1, x1, #1
+	sub x2, x2, #1
+	add x3, x3, #4
+	b strcmp
 
 	ret
 
 is_wizard:
-	eor x2, x2, x2
-	ldr x1, =request_buff
-	add x1, x1, #4
-        ldrb w2, [x1]
-        cmp w2, #0x2F
-        b.ne fail
+	ldr x1, =wizard_path
+	mov x2, wizard_len
+	ldr x3, =request_buff
+	add x1, x1, #1
+	sub x2, x2, #1
+	add x3, x3, #4
+	b strcmp
 
-        ldrb w2, [x1, #1]
-        cmp w2, #0x77
-        b.ne fail
-
-        ldrb w2, [x1, #2]
-        cmp w2, #0x69
-        b.ne fail
-
-        ldrb w2, [x1, #3]
-        cmp w2, #0x7a
-        b.ne fail
-
-        ldrb w2, [x1, #4]
-        cmp w2, #0x61
-        b.ne fail
-
-        ldrb w2, [x1, #5]
-        cmp w2, #0x72
-        b.ne fail
-
-        ldrb w2, [x1, #6]
-        cmp w2, #0x64
-        b.ne fail
-
-        ldrb w2, [x1, #7]
-        cmp w2, #0x2E
-        b.ne fail
-
-        ldrb w2, [x1, #8]
-        cmp w2, #0x68
-        b.ne fail
-
-        ldrb w2, [x1, #9]
-        cmp w2, #0x74
-        b.ne fail
-
-        ldrb w2, [x1, #10]
-        cmp w2, #0x6d
-        b.ne fail
-
-        ldrb w2, [x1, #11]
-        cmp w2, #0x6c
-        b.ne fail
-
-        ldrb w2, [x1, #12]
-        cmp w2, #0x20
-        b.ne fail
-
-	mov x17, #1
 	ret
 
 is_overview:
-	eor x2, x2, x2
-	ldr x1, =request_buff
-	add x1, x1, #4
-        ldrb w2, [x1]
-        cmp w2, #0x2F
-        b.ne fail
+	ldr x1, =overview_path
+	mov x2, overview_len
+	ldr x3, =request_buff
+	add x1, x1, #1
+	sub x2, x2, #1
+	add x3, x3, #4
+	b strcmp
 
-        ldrb w2, [x1, #1]
-        cmp w2, #0x69
-        b.ne fail
-
-        ldrb w2, [x1, #2]
-        cmp w2, #0x6d
-        b.ne fail
-
-        ldrb w2, [x1, #3]
-        cmp w2, #0x61
-        b.ne fail
-
-        ldrb w2, [x1, #4]
-        cmp w2, #0x67
-        b.ne fail
-
-        ldrb w2, [x1, #5]
-        cmp w2, #0x65
-        b.ne fail
-
-        ldrb w2, [x1, #6]
-        cmp w2, #0x73
-        b.ne fail
-
-        ldrb w2, [x1, #7]
-        cmp w2, #0x2E
-        b.ne fail
-
-        ldrb w2, [x1, #8]
-        cmp w2, #0x68
-        b.ne fail
-
-        ldrb w2, [x1, #9]
-        cmp w2, #0x74
-        b.ne fail
-
-        ldrb w2, [x1, #10]
-        cmp w2, #0x6d
-        b.ne fail
-
-        ldrb w2, [x1, #11]
-        cmp w2, #0x6c
-        b.ne fail
-
-        ldrb w2, [x1, #12]
-        cmp w2, #0x20
-        b.ne fail
-
-	mov x17, #1
 	ret
 
 is_img:
@@ -585,7 +470,7 @@ loop:
 	cmp x17, #1
 	b.ne send_400
 
-	bl is_slash
+	bl is_slash 
 	cmp x17, #1
 	mov x0, x20
 	b.eq index
