@@ -15,4 +15,4 @@ sudo ./server
 ---
 
 ## Yet to come:
-- local https in some way
+- https in some way
