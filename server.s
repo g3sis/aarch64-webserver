@@ -20,14 +20,20 @@ fail_len = . - http_fail
 overview_path:
 	.asciz "./images.html"
 overview_len = . - overview_path
+overview_path_acc:
+	.asciz "./sites/images.html"
 
 file_path:
 	.asciz "./index.html"
 file_len = . - file_path
+file_path_acc:
+	.asciz "./sites/index.html"
 
 wizard_path:
 	.asciz "./wizard.html"
 wizard_len = . - wizard_path
+wizard_path_acc:
+	.asciz "./sites/wizard.html"
 
 slash:
 	.asciz "/"
@@ -431,19 +437,19 @@ copy_path:
 	ret
 
 overview:
-	ldr x1, =overview_path
+	ldr x1, =overview_path_acc
 	bl load_html
 	mov x0, x20
 	b send_subpage
 
 index:
-	ldr x1, =file_path
+	ldr x1, =file_path_acc
 	bl load_html
 	mov x0, x20
 	b send_subpage
 
 wizard: 
-	ldr x1, =wizard_path
+	ldr x1, =wizard_path_acc
 	bl load_html
 	mov x0, x20
 	b send_subpage

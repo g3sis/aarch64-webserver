@@ -109,12 +109,12 @@ def create_http_response_files():
              f"\n"
          ).encode('ascii')
 
-         with open("images.html", "wb") as f:
+         with open("sites/images.html", "wb") as f:
              f.write(header + body_bytes)
          print(f"Created images.html ({len(header + body_bytes)} bytes)")
 
          # Update index.html header
-         index_path = Path("index.html")
+         index_path = Path("sites/index.html")
          if index_path.exists():
              print("Updating index.html header...")
              with open(index_path, 'rb') as f:
@@ -135,7 +135,7 @@ def create_http_response_files():
                  print(f"Updated index.html (Content-Length: {len(body)})")
 
          # Update wizard.html header
-         wizard_path = Path("wizard.html")
+         wizard_path = Path("sites/wizard.html")
          if wizard_path.exists():
              print("Updating wizard.html header...")
              with open(wizard_path, 'rb') as f:
