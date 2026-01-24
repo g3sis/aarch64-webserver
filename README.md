@@ -15,4 +15,6 @@ sudo ./server
 ---
 
 ## Yet to come:
+- cleanup
+- comments
 - https in some way
