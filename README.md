@@ -16,5 +16,6 @@ sudo ./server
 
 ## Yet to come:
 - cleanup
+- threads so that weird requests don't brick the entire server
 - comments
 - https in some way

@@ -35,6 +35,12 @@ wizard_len = . - wizard_path
 wizard_path_acc:
 	.asciz "./sites/wizard.html"
 
+books_path:
+	.asciz "./books.html"
+books_len = . - books_path
+books_path_acc:
+	.asciz "./sites/books.html"
+
 slash:
 	.asciz "/"
 slash_len = . - slash
@@ -354,6 +360,17 @@ is_wizard:
 
 	ret
 
+is_books:
+	ldr x1, =books_path
+	mov x2, books_len
+	ldr x3, =request_buff
+	add x1, x1, #1
+	sub x2, x2, #1
+	add x3, x3, #4
+	b strcmp
+
+	ret
+
 is_overview:
 	ldr x1, =overview_path
 	mov x2, overview_len
@@ -454,6 +471,12 @@ wizard:
 	mov x0, x20
 	b send_subpage
 
+books: 
+	ldr x1, =books_path_acc
+	bl load_html
+	mov x0, x20
+	b send_subpage
+
 loop: 
 
 	bl accept
@@ -492,6 +515,10 @@ loop:
 	bl is_wizard
 	cmp x17, #1
 	b.eq wizard
+
+	bl is_books	
+	cmp x17, #1
+	b.eq books
 	
 	bl is_img	
 	cmp x17, #1
