@@ -1,6 +1,6 @@
 HTTP/1.1 200 OK
 Content-Type: text/html
-Content-Length: 1554
+Content-Length: 1504
 
 <!DOCTYPE html>
 <html>
@@ -21,26 +21,33 @@ Content-Length: 1554
         }
         /* gallery holds the images, centered and wrapped */
         .gallery { display: flex; flex-wrap: wrap; justify-content: center; gap: 0px; width: 100%; box-sizing: border-box; padding: 8px 0; }
-        .gallery img { width: 10%; height: auto; display: block; }
-        @media (max-width: 600px) {
-            .gallery img { width: 30%; }
+        .gallery img {
+    height: 20vh;
+    width: auto;
+    display: block;
+   }
+
+@media (max-width: 600px) {
+    .gallery img { 
+        height: 15vh; 
+    }
+}
         }
     </style>
 </head>
 <body>
     <h1>
-    _             <a href="/" style="color:pink;text-decoration:none;">_<a>     _           
-   / \   _ __ ___| |__ (_)_   _____ 
-  / _ \ | '__/ __| '_ \| \ \ / / _ \
- / ___ \| | | (__| | | | |\ V /  __/
-/_/   \_\_|  \___|_| |_|_| \_/ \___|
+
+.---..---. .---..-. .-..-..-..-..---.
+| | || |-< | |  | |<a href="/" style="color:pink;text-decoration:none;">=</a>| || | \  / | |- 
+`-^-'`-'`-'`---'`-' `-'`-'  `'  `---'
     </h1>
     <div class="gallery">
     <img src="images/img001.jpg">
     <img src="images/img002.jpg">
     <img src="images/img003.jpg">
     <img src="images/img004.jpg">
-    <img src="images/img00i.jpg">
+    <img src="images/img005.jpg">
     </div>
 </body>
 </html>

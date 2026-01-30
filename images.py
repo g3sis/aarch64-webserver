@@ -56,12 +56,10 @@ def create_http_response_files():
              img_tags.append(f'<img src="images/{img_path.name}">')
 
          # ASCII art for the h1 (preserve backslashes using a raw string)
-         ascii_art = r"""    _             <a href="/" style="color:pink;text-decoration:none;">_<a>     _           
-   / \   _ __ ___| |__ (_)_   _____ 
-  / _ \ | '__/ __| '_ \| \ \ / / _ \
- / ___ \| | | (__| | | | |\ V /  __/
-/_/   \_\_|  \___|_| |_|_| \_/ \___|"""
-
+         ascii_art = r"""
+.---..---. .---..-. .-..-..-..-..---.
+| | || |-< | |  | |<a href="/" style="color:pink;text-decoration:none;">=</a>| || | \  / | |- 
+`-^-'`-'`-'`---'`-' `-'`-'  `'  `---'"""
          # Build HTML content: include the requested h1 styling and ASCII art as the h1 content
          html_content = (
          "<!DOCTYPE html>\n"
@@ -83,9 +81,17 @@ def create_http_response_files():
          "        }\n"
          "        /* gallery holds the images, centered and wrapped */\n"
          "        .gallery { display: flex; flex-wrap: wrap; justify-content: center; gap: 0px; width: 100%; box-sizing: border-box; padding: 8px 0; }\n"
-         "        .gallery img { width: 10%; height: auto; display: block; }\n"
-         "        @media (max-width: 600px) {\n"
-         "            .gallery img { width: 30%; }\n"
+         "        .gallery img {\n" 
+         "    height: 20vh;\n"
+         "    width: auto;\n"
+         "    display: block;\n" 
+         "   }\n"
+         "\n"
+         "@media (max-width: 600px) {\n"
+         "    .gallery img { \n"
+         "        height: 15vh; \n"
+         "    }\n"
+         "}\n"
          "        }\n"
          "    </style>\n"
          "</head>\n"

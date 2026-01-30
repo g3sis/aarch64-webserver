@@ -10,6 +10,18 @@ sockaddr:
 
 sockaddr_len = . - sockaddr 
 
+http_ok:
+	.asciz "HTTP/1.1 200 OK"
+http_ok_len = . - http_ok
+
+html_cl:
+	.ascii "Content-Length: "
+html_cl_len = . - html_cl 
+
+ct_html_text:
+	.asciz "Content-Type: text/html"
+ct_html_text_len = . - ct_html_text
+
 http_fail:
          .ascii "HTTP/1.1 400 Bad Request\r\n"
 	 .ascii "Content-Type: text/plain\r\n"
@@ -40,6 +52,12 @@ books_path:
 books_len = . - books_path
 books_path_acc:
 	.asciz "./sites/books.html"
+
+music_path:
+	.asciz "./music.html"
+music_len = . - music_path
+music_path_acc:
+	.asciz "./sites/music.html"
 
 slash:
 	.asciz "/"
@@ -234,6 +252,21 @@ accept:
 
 	mov x8, SYS_accept
 	svc #0
+	
+	ret
+
+str_len:
+	eor x2, x2, x2
+	ldrb w3, [x1]
+len_loop:
+	add x2, x2, #1
+	cmp w3, 48
+	b.ne len_loop
+	mov x0, x2
+	ret
+
+
+create_header:
 	
 	ret
 
