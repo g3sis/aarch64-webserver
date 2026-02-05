@@ -404,6 +404,17 @@ is_books:
 
 	ret
 
+is_music:
+	ldr x1, =music_path
+	mov x2, music_len
+	ldr x3, =request_buff
+	add x1, x1, #1
+	sub x2, x2, #1
+	add x3, x3, #4
+	b strcmp
+
+	ret
+
 is_overview:
 	ldr x1, =overview_path
 	mov x2, overview_len
@@ -510,6 +521,12 @@ books:
 	mov x0, x20
 	b send_subpage
 
+music: 
+	ldr x1, =music_path_acc
+	bl load_html
+	mov x0, x20
+	b send_subpage
+
 loop: 
 
 	bl accept
@@ -553,6 +570,10 @@ loop:
 	cmp x17, #1
 	b.eq books
 	
+	bl is_music	
+	cmp x17, #1
+	b.eq music
+
 	bl is_img	
 	cmp x17, #1
 	b.eq send_img
