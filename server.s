@@ -59,6 +59,12 @@ music_len = . - music_path
 music_path_acc:
 	.asciz "./sites/music.html"
 
+films_path:
+	.asciz "./films.html"
+films_len = . - films_path
+films_path_acc:
+	.asciz "./sites/films.html"
+
 slash:
 	.asciz "/"
 slash_len = . - slash
@@ -265,13 +271,33 @@ len_loop:
 	mov x0, x2
 	ret
 
-
-create_header:
-	
-	ret
-
 send_subpage:
-	
+
+//	mov x0, x20
+//	ldr x1, =http_ok
+//	mov x2, http_ok_len
+//	mov x8, SYS_sendto
+//	svc #0
+//
+//	mov x0, x20
+//	ldr x1, =html_cl
+//	mov x2, html_cl_len
+//	mov x8, SYS_sendto
+//	svc #0
+//
+//	//write length (x24) to socket
+//	mov x0, x20
+//	mov x1, x24
+//	mov x2, #64
+//	mov x8, SYS_sendto
+//	svc #0
+//
+//	mov x0, x20
+//	ldr x1, =ct_html_text
+//	mov x2, ct_html_text_len
+//	mov x8, SYS_sendto
+//	svc #0
+
 	mov x1, x26
 	mov x2, x24
 	mov x0, x20
@@ -415,6 +441,17 @@ is_music:
 
 	ret
 
+is_films:
+	ldr x1, =films_path
+	mov x2, films_len
+	ldr x3, =request_buff
+	add x1, x1, #1
+	sub x2, x2, #1
+	add x3, x3, #4
+	b strcmp
+
+	ret
+
 is_overview:
 	ldr x1, =overview_path
 	mov x2, overview_len
@@ -527,6 +564,12 @@ music:
 	mov x0, x20
 	b send_subpage
 
+films: 
+	ldr x1, =films_path_acc
+	bl load_html
+	mov x0, x20
+	b send_subpage
+
 loop: 
 
 	bl accept
@@ -573,6 +616,10 @@ loop:
 	bl is_music	
 	cmp x17, #1
 	b.eq music
+
+	bl is_films	
+	cmp x17, #1
+	b.eq films
 
 	bl is_img	
 	cmp x17, #1

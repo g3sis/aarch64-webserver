@@ -203,5 +203,25 @@ def create_http_response_files():
                      f.write(new_header + body)
                  print(f"Updated music.html (Content-Length: {len(body)})")
 
+         # Update films.html header
+         films_path = Path("sites/films.html")
+         if films_path.exists():
+             print("Updating films.html header...")
+             with open(films_path, 'rb') as f:
+                 content = f.read()
+
+             if b'\n\n' in content:
+                 _, body = content.split(b'\n\n', 1)
+
+                 new_header = (
+                     f"HTTP/1.1 200 OK\n"
+                     f"Content-Length: {len(body)}\n"
+                     f"Content-Type: text/html\n"
+                     f"\n"
+                 ).encode('ascii')
+
+                 with open(films_path, 'wb') as f:
+                     f.write(new_header + body)
+                 print(f"Updated films.html (Content-Length: {len(body)})")
 if __name__ == "__main__":
          create_http_response_files()
