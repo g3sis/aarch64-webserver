@@ -11,7 +11,7 @@ sockaddr:
 sockaddr_len = . - sockaddr 
 
 http_ok:
-	.asciz "HTTP/1.1 200 OK"
+	.ascii "HTTP/1.1 200 OK\r\n"
 http_ok_len = . - http_ok
 
 html_cl:
@@ -19,7 +19,8 @@ html_cl:
 html_cl_len = . - html_cl 
 
 ct_html_text:
-	.asciz "Content-Type: text/html"
+	.ascii "\r\nContent-Type: text/html\r\n"
+	.ascii "\r\n"
 ct_html_text_len = . - ct_html_text
 
 http_fail:
@@ -86,6 +87,9 @@ request_buff:
 img_path_buff:
 	.zero 14
 
+html_length_buffer:
+	.zero 20
+
 temp_byte: 
 	.zero 1
 
@@ -100,6 +104,9 @@ _start:
 print:
 	mov x8, SYS_write
 	svc #0
+	ret
+
+num_to_str:
 	ret
 
 
