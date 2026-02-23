@@ -15,8 +15,6 @@ sudo ./server
 ---
 
 ## Yet to come:
-- header creation in asm
-- routing without hard coded paths
 - threads so that weird requests don't brick the entire server
 - comments
 - cleanup
