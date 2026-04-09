@@ -106,10 +106,6 @@ print:
 	svc #0
 	ret
 
-num_to_str:
-	ret
-
-
 load_html:
 
 	// open
@@ -268,42 +264,7 @@ accept:
 	
 	ret
 
-str_len:
-	eor x2, x2, x2
-	ldrb w3, [x1]
-len_loop:
-	add x2, x2, #1
-	cmp w3, 48
-	b.ne len_loop
-	mov x0, x2
-	ret
-
 send_subpage:
-
-//	mov x0, x20
-//	ldr x1, =http_ok
-//	mov x2, http_ok_len
-//	mov x8, SYS_sendto
-//	svc #0
-//
-//	mov x0, x20
-//	ldr x1, =html_cl
-//	mov x2, html_cl_len
-//	mov x8, SYS_sendto
-//	svc #0
-//
-//	//write length (x24) to socket
-//	mov x0, x20
-//	mov x1, x24
-//	mov x2, #64
-//	mov x8, SYS_sendto
-//	svc #0
-//
-//	mov x0, x20
-//	ldr x1, =ct_html_text
-//	mov x2, ct_html_text_len
-//	mov x8, SYS_sendto
-//	svc #0
 
 	mov x1, x26
 	mov x2, x24
