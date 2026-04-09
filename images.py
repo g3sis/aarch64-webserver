@@ -102,6 +102,9 @@ def create_http_response_files():
          "    <div class=\"gallery\">\n"
          "    " + ("\n    ".join(img_tags)) + "\n"
          "    </div>\n"
+         "<footer>\n"
+         "<p>Brauche einen Filmscanner vorher gibts keine neuen Bilder :(<p>\n"
+         "</footer>\n"
          "</body>\n"
          "</html>"
          )

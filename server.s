@@ -14,15 +14,6 @@ http_ok:
 	.ascii "HTTP/1.1 200 OK\r\n"
 http_ok_len = . - http_ok
 
-html_cl:
-	.ascii "Content-Length: "
-html_cl_len = . - html_cl 
-
-ct_html_text:
-	.ascii "\r\nContent-Type: text/html\r\n"
-	.ascii "\r\n"
-ct_html_text_len = . - ct_html_text
-
 http_fail:
          .ascii "HTTP/1.1 400 Bad Request\r\n"
 	 .ascii "Content-Type: text/plain\r\n"
