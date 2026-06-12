@@ -54,6 +54,7 @@ def create_http_response_files():
          img_tags = []
          for img_path in sorted(image_files):
              img_tags.append(f'<img src="images/{img_path.name}">')
+         img_tags.reverse()
 
          # ASCII art for the h1 (preserve backslashes using a raw string)
          ascii_art = r"""
