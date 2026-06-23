@@ -11,6 +11,7 @@
 .equ SYS_listen, 201
 .equ SYS_accept, 202
 .equ SYS_sendto, 206
+.equ SYS_munmap, 215
 .equ SYS_mmap, 222
 
 # Socket constants

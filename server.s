@@ -268,6 +268,11 @@ send_subpage:
 	mov x8, SYS_sendto
 	svc #0
 
+	mov x0, x26         
+    	mov x1, x24       
+    	ldr x8, =SYS_munmap
+    	svc #0
+
 	b eol
 
 send_img: 
@@ -284,6 +289,11 @@ send_img:
 
 	mov x8, SYS_sendto
 	svc #0
+
+	mov x0, x22        
+    	mov x1, x21       
+	ldr x8, =SYS_munmap
+    	svc #0
 
 	b eol
 
